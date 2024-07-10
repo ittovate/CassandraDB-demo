@@ -2,7 +2,7 @@ package com.example.cassandradbdemo.controller;
 
 
 import com.example.cassandradbdemo.models.Folder;
-import com.example.cassandradbdemo.models.InitFolders;
+import com.example.cassandradbdemo.dataSeed.InitFolders;
 import com.example.cassandradbdemo.repos.FolderRepository;
 import com.example.cassandradbdemo.services.FolderService;
 import jakarta.annotation.PostConstruct;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller

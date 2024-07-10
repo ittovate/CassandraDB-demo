@@ -1,4 +1,6 @@
-package com.example.cassandradbdemo.models;
+package com.example.cassandradbdemo.dataSeed;
+
+import com.example.cassandradbdemo.models.Folder;
 
 import java.util.Arrays;
 import java.util.List;

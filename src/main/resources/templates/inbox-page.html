@@ -75,7 +75,7 @@
 
     <nav>
         <div class="card">
-            <div class="card-header">Folders</div>
+            <div class="card-header">Default Folders</div>
             <div class="card-body">
                 <ul class="list-group">
                     <li
@@ -84,7 +84,26 @@
                   d-flex
                   justify-content-between
                   align-items-center
-                " th:each="folder : ${folders}"
+                " th:each="folder : ${defaultFolders}"
+                    >
+                        <span th:text="${folder.label}">Label</span>
+                        <span class="badge bg-primary rounded-pill">14</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card" th:if="${userFolders}">
+            <div class="card-header">User Folders</div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li
+                            class="
+                  list-group-item
+                  d-flex
+                  justify-content-between
+                  align-items-center
+                " th:each="folder : ${userFolders}"
                     >
                         <span th:text="${folder.label}">Label</span>
                         <span class="badge bg-primary rounded-pill">14</span>

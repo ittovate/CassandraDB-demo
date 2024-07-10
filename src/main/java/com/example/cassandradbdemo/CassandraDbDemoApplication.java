@@ -1,7 +1,9 @@
 package com.example.cassandradbdemo;
 
 import com.example.cassandradbdemo.models.Vet;
+import com.example.cassandradbdemo.repos.FolderRepository;
 import com.example.cassandradbdemo.repos.VetRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -43,5 +45,7 @@ public class CassandraDbDemoApplication {
                     .ifPresent(v -> log.info("Vet by id: {}", v.getFirstName()));
         };
     }
+
+
 
 }

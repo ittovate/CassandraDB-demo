@@ -10,7 +10,6 @@ import java.util.List;
 @Table(value = "message_by_user_folder")
 public class EmailListItem {
 
-
     @PrimaryKey
     private EmailListItemKey id;
 

@@ -1,6 +1,7 @@
 package com.example.cassandradbdemo.models;
 
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
@@ -19,10 +20,20 @@ public class EmailListItem {
     @CassandraType(type = CassandraType.Name.TEXT)
     private String subject;
 
-
-
     @CassandraType(type = CassandraType.Name.BOOLEAN)
     private boolean isUnRead;
+
+    @Transient
+    private String agoTimeString;
+
+    public String getAgoTimeString() {
+        return agoTimeString;
+    }
+
+    public void setAgoTimeString(String agoTimeString) {
+        this.agoTimeString = agoTimeString;
+    }
+
 
     public EmailListItemKey getId() {
         return id;

@@ -23,25 +23,6 @@ public class CassandraDbDemoApplication {
 
     public static void main(String[] args) {
             ApplicationContext context = SpringApplication.run(CassandraDbDemoApplication.class, args);
-            Dotenv dotenv = (Dotenv) context.getBean("dotenv");
-
-//        try (CqlSession session = CqlSession.builder()
-//                .withCloudSecureConnectBundle(Paths.get(System.getProperty("user.dir")+"/src/main/resources/secure-connect-inboxapp.zip"))
-//                .withAuthCredentials("ZxitGXlgyjJRikxEBkWmIjdC","c2lv9C8ht59aB.k6XemjrxT36tBfv1rGU,b8CO2hUbwg7ZquDUN.10QI._QpEsY6d8GmWJxoDiqHAhc.aP+xs8Njm7H6h-ni.KQZ-tBbHzHtD_5bA.LJUPhjovJT-RnN")
-//                .build()) {
-//            // Select the release_version from the system.local table:
-//            ResultSet rs = session.execute("select release_version from system.local");
-//            Row row = rs.one();
-//            //Print the results of the CQL query to the console:
-//            if (row != null) {
-//                System.out.println(row.getString("release_version"));
-//            } else {
-//                System.out.println("An error occurred.");
-//            }
-//        }
-//        System.exit(0);
-
-
 
     }
     @Bean

@@ -11,12 +11,6 @@ public class EnvConfig {
 
     private Dotenv dotEnv;
 
-//    @PostConstruct
-//    public void init() {
-//        dotEnv = Dotenv.load();
-//        System.out.println("came here first or last?");
-//    }
-
     EnvConfig() {
         dotEnv = Dotenv.load();
         for (DotenvEntry entry : dotEnv.entries()) {

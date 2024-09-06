@@ -13,12 +13,12 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -35,33 +35,64 @@ public class InboxController {
     FolderService folderService;
 
     @GetMapping(value = "/folders")
-      public String getHomePage(Model model){
-        List<Folder> folderList = folderRepository.findAllById("randomUserId");
-        model.addAttribute("userFolders" , folderList);
+    public String getHomePage(@RequestParam(required = false) String folder, Model model) {
+        String userId = "randomUserId";// will be replaced by the signed-in user
+
+        List<Folder> folderList = folderRepository.findAllById(userId); // Folders created by the user -> endpoint not created yet
+        model.addAttribute("userFolders", folderList);
 
 
-        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders("randomUserId");
-        model.addAttribute("defaultFolders" , defaultfolderList);
+        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId); // default folders for all users
+        model.addAttribute("defaultFolders", defaultfolderList);
 
+        if (!StringUtils.hasText(folder)) {
+            folder = "Inbox";
+        }
 
-        String folderLabel = "Inbox";
-        List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label("randomUserId", folderLabel);
+        List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label(userId, folder);
 
         PrettyTime p = new PrettyTime();
 
         emailList.stream().forEach(emailItem -> {
             UUID timeuuid = emailItem.getId().getTimeId();
-            Date date= new Date(Uuids.unixTimestamp(timeuuid));
+            Date date = new Date(Uuids.unixTimestamp(timeuuid));
             emailItem.setAgoTimeString(p.format(date));
         });
 
-        model.addAttribute("emailList" , emailList);
+        model.addAttribute("emailList", emailList);
+        model.addAttribute("folderName", folder);
+        return "inbox-page";
+    }
+
+
+    @GetMapping(value = "/folders/{id}")
+    public String getFolder(@PathVariable String id, Model model) {
+        System.out.println("@PathVariable:::  " + id);
+
+        Optional<Folder> optionalFolder = folderRepository.findById(id);
+
+        if (optionalFolder.isPresent()) {
+            Folder folder = optionalFolder.get();
+
+            String folderLabel = folder.getLabel();
+            List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label("randomUserId", folderLabel);
+
+            PrettyTime p = new PrettyTime();
+
+            emailList.stream().forEach(emailItem -> {
+                UUID timeuuid = emailItem.getId().getTimeId();
+                Date date = new Date(Uuids.unixTimestamp(timeuuid));
+                emailItem.setAgoTimeString(p.format(date));
+            });
+
+            model.addAttribute("emailList", emailList);
+        }
         return "inbox-page";
     }
 
 
     @PostConstruct
-    public void init(){
+    public void init() {
         List<Folder> folders = InitFolders.init("randomUserId");
         folderRepository.saveAll(folders);
     }

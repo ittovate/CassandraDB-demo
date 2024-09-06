@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="card" th:fragment="emailListFragment">
+    <div class="card-header" th:if="${emailList}" th:text="${folderName}"></div>
+    <div class="card-body">
+        <div class="list-group">
+            <a th:each="message : ${emailList}" th:href="@{/folders/message/{id}(id=${message.id.timeId})}"
+               class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1" th:text="${message.subject}"></h5>
+                    <small th:text="${message.agoTimeString}"></small>
+                </div>
+                <p class="mb-1" th:text="${message.id.timeId}"></p>
+                <p class="mb-1" th:text="${message.to}"></p>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

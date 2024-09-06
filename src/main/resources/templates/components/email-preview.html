@@ -52,27 +52,31 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>Welcome, Name</h1>
-    </header>
+<div class="card" th:fragment="emailFragment" th:if="${email}">
+    <div class="card-header" th:text="${email.from}+': '+${email.subject}"></div>
+    <div class="card-body">
+        <dl>
+            <dt>From:</dt>
+            <dd th:text="${email.from}"></dd>
+            <dt>Subject:</dt>
+            <dd th:text="${email.subject}"></dd>
+            <dt>Time:</dt>
+            <dd th:text="${email.sentTime}"></dd>
+            <dt>body:</dt>
+            <dd th:text="${email.body}"></dd>
+            <dt>Sent To:</dt>
+            <dd th:text="${email.toIds}"></dd>
+        </dl>
+        <!--
+                    <a th:each="message : ${emailList}" th:href="@{/folders/message/{id}(id=${message.id.timeId})}"
+        -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end ">
+            <a th:href="@{'/compose?to='+${email.from}}" class="btn btn-primary me-md-2 ">Reply</a>
+            <a th:href="@{'/compose?to='+${email.from}+','+${email.toIds}}" class="btn btn-primary me-md-2 ">Reply All</a>
 
-    <nav>
-        <div class="card">
-            <a href="/compose" class="btn btn-primary">Compose </a>
         </div>
-        <div th:insert="components/folder-list :: folder-list (panelName ='Default Folders', folders=${defaultFolders})"></div>
-        <div th:if="${userFolders}"
-             th:insert="components/folder-list :: folder-list (panelName ='User Folders', folders=${userFolders})"></div>
-    </nav>
 
-    <main>
-        <div class="card" th:insert="components/email-list :: emailListFragment">
-        </div>
-        <div class="card" th:insert="components/email-preview :: emailFragment">
-
-        </div>
-    </main>
+    </div>
 
     <footer>
         <!-- Footer content -->

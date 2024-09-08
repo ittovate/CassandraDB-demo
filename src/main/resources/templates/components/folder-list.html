@@ -13,9 +13,9 @@
                   d-flex
                   justify-content-between
                   align-items-center
-                " th:each="folder : ${folders}" th:href="@{'?folder=' + ${folder.label}}">
+                " th:each="folder : ${folders}" th:href="@{'/folders?folder=' + ${folder.label}}">
                     <span th:text="${folder.label}"></span>
-                    <span class="badge bg-primary rounded-pill">14</span>
+                    <span class="badge bg-primary rounded-pill" th:text="${stats.get(folder.label)}"></span>
                 </a>
 
             </ul>

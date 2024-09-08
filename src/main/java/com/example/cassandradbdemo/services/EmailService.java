@@ -7,6 +7,7 @@ import com.example.cassandradbdemo.models.EmailListItem;
 import com.example.cassandradbdemo.models.EmailListItemKey;
 import com.example.cassandradbdemo.repos.EmailListItemRepository;
 import com.example.cassandradbdemo.repos.EmailRepository;
+import com.example.cassandradbdemo.repos.UnreadEmailStatsRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class EmailService {
     @Autowired
     private EmailListItemRepository emailListItemRepository;
 
+    @Autowired
+    private UnreadEmailStatsRepository unreadEmailStatsRepository;
+
     public void sendEmail(String from, List<String> to, String subject, String body) {
         Email email = new Email();
         email.setFrom(from);
@@ -35,11 +39,12 @@ public class EmailService {
 
         to.forEach(recepient -> {
             EmailListItem item = createEmailListItem(to, subject, email, recepient, "Inbox");
-
             emailListItemRepository.save(item);
+            unreadEmailStatsRepository.incrementUnreadCount(recepient, "Inbox");
         });
 
-        EmailListItem sentItemEntry = createEmailListItem(to, subject, email, from, "Sent" );
+        EmailListItem sentItemEntry = createEmailListItem(to, subject, email, from, "Sent");
+        sentItemEntry.setUnRead(false);
         emailListItemRepository.save(sentItemEntry);
 
 

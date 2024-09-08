@@ -5,8 +5,10 @@ import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.example.cassandradbdemo.models.EmailListItem;
 import com.example.cassandradbdemo.models.Folder;
 import com.example.cassandradbdemo.dataSeed.InitFolders;
+import com.example.cassandradbdemo.models.UnreadEmailStats;
 import com.example.cassandradbdemo.repos.EmailListItemRepository;
 import com.example.cassandradbdemo.repos.FolderRepository;
+import com.example.cassandradbdemo.repos.UnreadEmailStatsRepository;
 import com.example.cassandradbdemo.services.FolderService;
 import jakarta.annotation.PostConstruct;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -16,10 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class InboxController {
@@ -34,6 +34,7 @@ public class InboxController {
     @Autowired
     FolderService folderService;
 
+
     @GetMapping(value = "/folders")
     public String getHomePage(@RequestParam(required = false) String folder, Model model) {
         String userId = "randomUserId";// will be replaced by the signed-in user
@@ -44,6 +45,8 @@ public class InboxController {
 
         List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId); // default folders for all users
         model.addAttribute("defaultFolders", defaultfolderList);
+
+        model.addAttribute("stats", folderService.getEmailStats(userId));
 
         if (!StringUtils.hasText(folder)) {
             folder = "Inbox";
@@ -67,7 +70,6 @@ public class InboxController {
 
     @GetMapping(value = "/folders/{id}")
     public String getFolder(@PathVariable String id, Model model) {
-        System.out.println("@PathVariable:::  " + id);
 
         Optional<Folder> optionalFolder = folderRepository.findById(id);
 

@@ -39,17 +39,19 @@ public class ComposeController {
 
     @GetMapping(value = "/compose")
     public String getEmail(Model model, @RequestParam(required = false) String to) {
+        String userId = "randomUserId";// will be replaced by the signed-in user
 
-        List<Folder> folderList = folderRepository.findAllById("randomUserId");
+        List<Folder> folderList = folderRepository.findAllById(userId);
         model.addAttribute("userFolders", folderList);
 
 
-        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders("randomUserId");
+        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId);
         model.addAttribute("defaultFolders", defaultfolderList);
 
         List<String> ids = splitIds(to);
 
         model.addAttribute("to", String.join(", ", ids));
+        model.addAttribute("stats", folderService.getEmailStats(userId));
 
         return "/components/compose-page";
     }

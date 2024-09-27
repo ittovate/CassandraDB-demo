@@ -11,6 +11,8 @@ import com.example.cassandradbdemo.services.FolderService;
 import org.jetbrains.annotations.NotNull;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -37,10 +39,14 @@ public class ComposeController {
     @Autowired
     EmailService emailService;
 
-    @GetMapping(value = "/compose")
-    public String getEmail(Model model, @RequestParam(required = false) String to) {
-        String userId = "randomUserId";// will be replaced by the signed-in user
+    @GetMapping("/compose")
+    public String getEmail(
+            @AuthenticationPrincipal OidcUser principal,
+            Model model, @RequestParam(required = false) String to) {
+        System.out.println("email sent111 ");
 
+        String userName = principal.getAttribute("name");
+        String userId = principal.getEmail();
         List<Folder> folderList = folderRepository.findAllById(userId);
         model.addAttribute("userFolders", folderList);
 
@@ -71,15 +77,19 @@ public class ComposeController {
 
     @PostMapping("/sendEmail")
     public ModelAndView sendEmail(
-            @RequestBody MultiValueMap<String, String> formData
+            @AuthenticationPrincipal OidcUser principal
+//            @RequestBody MultiValueMap<String, String> formData
+
     ) {
-
-        String from = "randomUserId";
-        List<String> toIds = splitIds(formData.getFirst("to"));
-        String subject = formData.getFirst("subject");
-        String body = formData.getFirst("body");
-
-        emailService.sendEmail(from, toIds, subject, body);
+        System.out.println("email sent111 ");
+//
+//        String userName = principal.getAttribute("name");
+//        String from = principal.getEmail();
+//        List<String> toIds = splitIds(formData.getFirst("to"));
+//        String subject = formData.getFirst("subject");
+//        String body = formData.getFirst("body");
+//
+//        emailService.sendEmail(from, toIds, subject, body);
 
         return new ModelAndView("redirect:/folders");
 

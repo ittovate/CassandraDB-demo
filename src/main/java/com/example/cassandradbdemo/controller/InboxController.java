@@ -13,6 +13,9 @@ import com.example.cassandradbdemo.services.FolderService;
 import jakarta.annotation.PostConstruct;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -36,8 +39,12 @@ public class InboxController {
 
 
     @GetMapping(value = "/folders")
-    public String getHomePage(@RequestParam(required = false) String folder, Model model) {
-        String userId = "randomUserId";// will be replaced by the signed-in user
+    public String getHomePage(
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(required = false) String folder,
+            Model model) {
+        String userId = principal.getEmail();
+        String userName = principal.getAttribute("name");
 
         List<Folder> folderList = folderRepository.findAllById(userId); // Folders created by the user -> endpoint not created yet
         model.addAttribute("userFolders", folderList);
@@ -69,7 +76,12 @@ public class InboxController {
 
 
     @GetMapping(value = "/folders/{id}")
-    public String getFolder(@PathVariable String id, Model model) {
+    public String getFolder(
+            @AuthenticationPrincipal OidcUser principal,
+            @PathVariable String id,
+            Model model) {
+        String userId = principal.getEmail();
+        String userName = principal.getAttribute("name");
 
         Optional<Folder> optionalFolder = folderRepository.findById(id);
 
@@ -77,7 +89,7 @@ public class InboxController {
             Folder folder = optionalFolder.get();
 
             String folderLabel = folder.getLabel();
-            List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label("randomUserId", folderLabel);
+            List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label(userId, folderLabel);
 
             PrettyTime p = new PrettyTime();
 
@@ -91,6 +103,7 @@ public class InboxController {
         }
         return "inbox-page";
     }
+
 
 
     @PostConstruct

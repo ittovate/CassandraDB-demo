@@ -14,6 +14,8 @@ import com.example.cassandradbdemo.services.FolderService;
 import jakarta.annotation.PostConstruct;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,11 +49,13 @@ public class EmailController {
     public String getEmail(
             @PathVariable UUID id,
             @RequestParam String folder,
+            @AuthenticationPrincipal OidcUser principal,
             Model model) {
         Optional<Email> email = emailRepository.findById(id);
 
         PrettyTime p = new PrettyTime();
-        String userId = "randomUserId";// will be replaced by the signed-in user
+        String userId = principal.getEmail();
+        String userName = principal.getAttribute("name");
 
         if (!email.isPresent()) {
             return "inbox-page";
@@ -64,11 +68,11 @@ public class EmailController {
         model.addAttribute("email", presentEmail);
 
 
-        List<Folder> folderList = folderRepository.findAllById("randomUserId");
+        List<Folder> folderList = folderRepository.findAllById(userId);
         model.addAttribute("userFolders", folderList);
 
 
-        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders("randomUserId");
+        List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId);
         model.addAttribute("defaultFolders", defaultfolderList);
 
 

@@ -28,6 +28,7 @@ public class EmailService {
     private UnreadEmailStatsRepository unreadEmailStatsRepository;
 
     public void sendEmail(String from, List<String> to, String subject, String body) {
+
         Email email = new Email();
         email.setFrom(from);
         email.setTo(to);
@@ -47,6 +48,7 @@ public class EmailService {
         sentItemEntry.setUnRead(false);
         emailListItemRepository.save(sentItemEntry);
 
+        System.out.println("email sent ");
 
     }
 

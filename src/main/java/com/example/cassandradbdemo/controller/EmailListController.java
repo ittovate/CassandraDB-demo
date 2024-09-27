@@ -12,6 +12,8 @@ import com.example.cassandradbdemo.services.EmailService;
 import com.example.cassandradbdemo.services.FolderService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +41,13 @@ public class EmailListController {
 
 
     @GetMapping(value = "/messages")
-    public String getMessages(Model model) {
+    public String getMessages(
+            @AuthenticationPrincipal OidcUser principal,
+            Model model) {
+
+        String userId = principal.getEmail();
+        String userName = principal.getAttribute("name");
         String folderLabel = "Inbox";
-        String userId = "randomUserId";// will be replaced by the signed-in user
 
         List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label(userId, folderLabel);
         model.addAttribute("emailList", emailList);
@@ -51,14 +57,14 @@ public class EmailListController {
         return "inbox-page";
     }
 
-    @PostConstruct
-    public List<EmailListItem> generateListOfEmails() {
-        ArrayList<EmailListItem> emailList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-
-            emailService.sendEmail("randomUserId", Arrays.asList("randomUserId2", "randomUserId", "asdfasdf"), "subject" + i, "subject" + i);
-
-        }
-        return emailList;
-    }
+//    @PostConstruct
+//    public List<EmailListItem> generateListOfEmails() {
+//        ArrayList<EmailListItem> emailList = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//
+//            emailService.sendEmail("randomUserId", Arrays.asList("randomUserId2", "randomUserId", "asdfasdf"), "subject" + i, "subject" + i);
+//
+//        }
+//        return emailList;
+//    }
 }

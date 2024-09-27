@@ -105,3 +105,4 @@ Ensured by clustering architecture. If a node fails, data retrieval is still pos
 
 
 
+https://developers.google.com/identity/openid-connect/openid-connect#java

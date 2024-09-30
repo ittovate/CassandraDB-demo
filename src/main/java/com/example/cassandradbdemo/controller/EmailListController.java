@@ -20,25 +20,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.*;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.*;
+
 @Controller
 public class EmailListController {
-    @Autowired
     private EmailListItemRepository emailListItemRepository;
-
-    @Autowired
-    private EmailRepository emailRepository;
-
-    @Autowired
-    private UnreadEmailStatsRepository unreadEmailStatsRepository;
-
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    FolderService folderService;
-    private String[] labels = {"Inbox", "Sent", "Important", "Done"};
-
-    private Random rand = new Random();
-
+    private FolderService folderService;
+    public EmailListController(EmailListItemRepository emailListItemRepository, FolderService folderService) {
+        this.emailListItemRepository = emailListItemRepository;
+        this.folderService = folderService;
+    }
 
     @GetMapping(value = "/messages")
     public String getMessages(
@@ -46,25 +37,13 @@ public class EmailListController {
             Model model) {
 
         String userId = principal.getEmail();
-        String userName = principal.getAttribute("name");
-        String folderLabel = "Inbox";
+        String folderLabel = INBOX_LABEL;
 
         List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label(userId, folderLabel);
-        model.addAttribute("emailList", emailList);
-        model.addAttribute("stats", folderService.getEmailStats(userId));
+        model.addAttribute(EMAIL_LIST_ATTRIBUTE, emailList);
+        model.addAttribute(STATS_ATTRIBUTE, folderService.getEmailStats(userId));
 
 
-        return "inbox-page";
+        return INBOX_MODEL;
     }
-
-//    @PostConstruct
-//    public List<EmailListItem> generateListOfEmails() {
-//        ArrayList<EmailListItem> emailList = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//
-//            emailService.sendEmail("randomUserId", Arrays.asList("randomUserId2", "randomUserId", "asdfasdf"), "subject" + i, "subject" + i);
-//
-//        }
-//        return emailList;
-//    }
 }

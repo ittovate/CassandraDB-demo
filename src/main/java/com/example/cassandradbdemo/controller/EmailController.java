@@ -27,23 +27,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.*;
+
 @Controller
 public class EmailController {
+    private final EmailRepository emailRepository;
+    private final FolderRepository folderRepository;
+    private final FolderService folderService;
+    private final EmailListItemRepository emailListItemRepository;
+    private final UnreadEmailStatsRepository unreadEmailStatsRepository;
 
-    @Autowired
-    private EmailRepository emailRepository;
-
-    @Autowired
-    FolderRepository folderRepository;
-
-    @Autowired
-    FolderService folderService;
-
-    @Autowired
-    EmailListItemRepository emailListItemRepository;
-
-    @Autowired
-    UnreadEmailStatsRepository unreadEmailStatsRepository;
+    public EmailController(
+            EmailRepository emailRepository,
+            FolderRepository folderRepository,
+            FolderService folderService,
+            EmailListItemRepository emailListItemRepository,
+            UnreadEmailStatsRepository unreadEmailStatsRepository
+    ) {
+        this.emailRepository = emailRepository;
+        this.folderRepository = folderRepository;
+        this.folderService = folderService;
+        this.emailListItemRepository = emailListItemRepository;
+        this.unreadEmailStatsRepository = unreadEmailStatsRepository;
+    }
 
     @GetMapping(value = "/folders/message/{id}")
     public String getEmail(
@@ -55,25 +61,24 @@ public class EmailController {
 
         PrettyTime p = new PrettyTime();
         String userId = principal.getEmail();
-        String userName = principal.getAttribute("name");
 
         if (!email.isPresent()) {
-            return "inbox-page";
+            return INBOX_MODEL;
         }
         Email presentEmail = email.get();
         presentEmail.setToIds(String.join(", ", presentEmail.getTo()));
         UUID timeuuid = presentEmail.getId();
         Date date = new Date(Uuids.unixTimestamp(timeuuid));
         presentEmail.setSentTime(p.format(date));
-        model.addAttribute("email", presentEmail);
+        model.addAttribute(EMAIL_ATTRIBUTE, presentEmail);
 
 
         List<Folder> folderList = folderRepository.findAllById(userId);
-        model.addAttribute("userFolders", folderList);
+        model.addAttribute(USER_FOLDERS_ATTRIBUTE, folderList);
 
 
         List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId);
-        model.addAttribute("defaultFolders", defaultfolderList);
+        model.addAttribute(DEFAULT_FOLDERS_ATTRIBUTE, defaultfolderList);
 
 
         EmailListItemKey key = new EmailListItemKey();
@@ -91,9 +96,9 @@ public class EmailController {
             }
         }
 
-        model.addAttribute("stats", folderService.getEmailStats(userId));
+        model.addAttribute(STATS_ATTRIBUTE, folderService.getEmailStats(userId));
 
-        return "inbox-page";
+        return INBOX_MODEL;
     }
 
 

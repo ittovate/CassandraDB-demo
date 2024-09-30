@@ -20,7 +20,7 @@ public class SecurityAdapter {
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests(a -> a
-                        .requestMatchers("/", "/sendEmail", "/error", "/webjars/**").permitAll()
+                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e

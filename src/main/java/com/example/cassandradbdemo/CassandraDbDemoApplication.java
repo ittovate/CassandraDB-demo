@@ -22,7 +22,7 @@ public class CassandraDbDemoApplication {
 //    private final static Logger log = LoggerFactory.getLogger(CassandraDbDemoApplication.class);
 
     public static void main(String[] args) {
-            ApplicationContext context = SpringApplication.run(CassandraDbDemoApplication.class, args);
+        ApplicationContext context = SpringApplication.run(CassandraDbDemoApplication.class, args);
 
     }
     @Bean

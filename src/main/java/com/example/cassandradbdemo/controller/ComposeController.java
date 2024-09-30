@@ -23,43 +23,43 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.*;
+
 @Controller
 public class ComposeController {
+    private final FolderRepository folderRepository;
+    private final EmailService emailService;
+    private final FolderService folderService;
 
-    @Autowired
-    private EmailRepository emailRepository;
-
-
-    @Autowired
-    FolderRepository folderRepository;
-
-    @Autowired
-    FolderService folderService;
-
-    @Autowired
-    EmailService emailService;
+    public ComposeController(
+            FolderRepository folderRepository,
+            FolderService folderService,
+            EmailService emailService
+    ) {
+        this.folderRepository = folderRepository;
+        this.folderService = folderService;
+        this.emailService = emailService;
+    }
 
     @GetMapping("/compose")
     public String getEmail(
             @AuthenticationPrincipal OidcUser principal,
             Model model, @RequestParam(required = false) String to) {
-        System.out.println("email sent111 ");
 
-        String userName = principal.getAttribute("name");
         String userId = principal.getEmail();
         List<Folder> folderList = folderRepository.findAllById(userId);
-        model.addAttribute("userFolders", folderList);
+        model.addAttribute(USER_FOLDERS_ATTRIBUTE, folderList);
 
 
         List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId);
-        model.addAttribute("defaultFolders", defaultfolderList);
+        model.addAttribute(DEFAULT_FOLDERS_ATTRIBUTE, defaultfolderList);
 
         List<String> ids = splitIds(to);
 
-        model.addAttribute("to", String.join(", ", ids));
-        model.addAttribute("stats", folderService.getEmailStats(userId));
+        model.addAttribute(TO_ATTRIBUTE, String.join(", ", ids));
+        model.addAttribute(STATS_ATTRIBUTE, folderService.getEmailStats(userId));
 
-        return "/components/compose-page";
+        return COMPOSE_MODEL;
     }
 
     @NotNull
@@ -77,21 +77,18 @@ public class ComposeController {
 
     @PostMapping("/sendEmail")
     public ModelAndView sendEmail(
-            @AuthenticationPrincipal OidcUser principal
-//            @RequestBody MultiValueMap<String, String> formData
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestBody MultiValueMap<String, String> formData
 
     ) {
-        System.out.println("email sent111 ");
-//
-//        String userName = principal.getAttribute("name");
-//        String from = principal.getEmail();
-//        List<String> toIds = splitIds(formData.getFirst("to"));
-//        String subject = formData.getFirst("subject");
-//        String body = formData.getFirst("body");
-//
-//        emailService.sendEmail(from, toIds, subject, body);
+        String from = principal.getEmail();
+        List<String> toIds = splitIds(formData.getFirst(TO));
+        String subject = formData.getFirst(SUBJECT);
+        String body = formData.getFirst(BODY);
 
-        return new ModelAndView("redirect:/folders");
+        emailService.sendEmail(from, toIds, subject, body);
+
+        return new ModelAndView("redirect:/" + FOLDERS_MODEL);
 
     }
 

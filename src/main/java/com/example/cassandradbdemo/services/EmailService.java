@@ -15,20 +15,27 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.INBOX_LABEL;
+import static com.example.cassandradbdemo.constant.ModelConstant.SENT_LABEL;
+
 @Service
 public class EmailService {
 
+    private final EmailRepository emailRepository;
+    private final EmailListItemRepository emailListItemRepository;
+    private final UnreadEmailStatsRepository unreadEmailStatsRepository;
 
-    @Autowired
-    private EmailRepository emailRepository;
-    @Autowired
-    private EmailListItemRepository emailListItemRepository;
-
-    @Autowired
-    private UnreadEmailStatsRepository unreadEmailStatsRepository;
+    public EmailService(
+            EmailRepository emailRepository,
+            EmailListItemRepository emailListItemRepository,
+            UnreadEmailStatsRepository unreadEmailStatsRepository
+    ) {
+        this.emailRepository = emailRepository;
+        this.emailListItemRepository = emailListItemRepository;
+        this.unreadEmailStatsRepository = unreadEmailStatsRepository;
+    }
 
     public void sendEmail(String from, List<String> to, String subject, String body) {
-
         Email email = new Email();
         email.setFrom(from);
         email.setTo(to);
@@ -39,16 +46,14 @@ public class EmailService {
         emailRepository.save(email);
 
         to.forEach(recepient -> {
-            EmailListItem item = createEmailListItem(to, subject, email, recepient, "Inbox");
+            EmailListItem item = createEmailListItem(to, subject, email, recepient, INBOX_LABEL);
             emailListItemRepository.save(item);
-            unreadEmailStatsRepository.incrementUnreadCount(recepient, "Inbox");
+            unreadEmailStatsRepository.incrementUnreadCount(recepient, INBOX_LABEL);
         });
 
-        EmailListItem sentItemEntry = createEmailListItem(to, subject, email, from, "Sent");
+        EmailListItem sentItemEntry = createEmailListItem(to, subject, email, from, SENT_LABEL);
         sentItemEntry.setUnRead(false);
         emailListItemRepository.save(sentItemEntry);
-
-        System.out.println("email sent ");
 
     }
 

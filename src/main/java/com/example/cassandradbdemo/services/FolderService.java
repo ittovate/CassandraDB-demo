@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.*;
+
 @Service
 public class FolderService {
 
@@ -20,10 +22,10 @@ public class FolderService {
 
     public List<Folder> fetchDefaultUserFolders(String userId) {
         return Arrays.asList(
-                new Folder(userId, "Inbox", "blue"),
-                new Folder(userId, "Sent", "purple"),
-                new Folder(userId, "Important", "red"),
-                new Folder(userId, "Done", "green")
+                new Folder(userId, INBOX_LABEL, BLUE_COLOR),
+                new Folder(userId, SENT_LABEL, PURPLE_COLOR),
+                new Folder(userId, IMPORTANT_LABEL, RED_COLOR),
+                new Folder(userId, DONE_LABEL, GREEN_COLOR)
         );
     }
 

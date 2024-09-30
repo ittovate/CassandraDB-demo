@@ -24,18 +24,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.cassandradbdemo.constant.ModelConstant.*;
+
 @Controller
 public class InboxController {
 
-    @Autowired
-    FolderRepository folderRepository;
-
-    @Autowired
+    private FolderRepository folderRepository;
     private EmailListItemRepository emailListItemRepository;
+    private FolderService folderService;
 
-
-    @Autowired
-    FolderService folderService;
+    public InboxController(FolderRepository folderRepository, EmailListItemRepository emailListItemRepository, FolderService folderService) {
+        this.folderRepository = folderRepository;
+        this.emailListItemRepository = emailListItemRepository;
+        this.folderService = folderService;
+    }
 
 
     @GetMapping(value = "/folders")
@@ -44,19 +46,17 @@ public class InboxController {
             @RequestParam(required = false) String folder,
             Model model) {
         String userId = principal.getEmail();
-        String userName = principal.getAttribute("name");
-
         List<Folder> folderList = folderRepository.findAllById(userId); // Folders created by the user -> endpoint not created yet
-        model.addAttribute("userFolders", folderList);
+        model.addAttribute(USER_FOLDERS_ATTRIBUTE, folderList);
 
 
         List<Folder> defaultfolderList = folderService.fetchDefaultUserFolders(userId); // default folders for all users
-        model.addAttribute("defaultFolders", defaultfolderList);
+        model.addAttribute(DEFAULT_FOLDERS_ATTRIBUTE, defaultfolderList);
 
-        model.addAttribute("stats", folderService.getEmailStats(userId));
+        model.addAttribute(STATS_ATTRIBUTE, folderService.getEmailStats(userId));
 
         if (!StringUtils.hasText(folder)) {
-            folder = "Inbox";
+            folder = INBOX_FOLDER;
         }
 
         List<EmailListItem> emailList = emailListItemRepository.findAllById_UserIdAndId_Label(userId, folder);
@@ -69,9 +69,9 @@ public class InboxController {
             emailItem.setAgoTimeString(p.format(date));
         });
 
-        model.addAttribute("emailList", emailList);
-        model.addAttribute("folderName", folder);
-        return "inbox-page";
+        model.addAttribute(EMAIL_LIST_ATTRIBUTE, emailList);
+        model.addAttribute(FOLDER_NAME_ATTRIBUTE, folder);
+        return INBOX_MODEL;
     }
 
 
@@ -81,8 +81,6 @@ public class InboxController {
             @PathVariable String id,
             Model model) {
         String userId = principal.getEmail();
-        String userName = principal.getAttribute("name");
-
         Optional<Folder> optionalFolder = folderRepository.findById(id);
 
         if (optionalFolder.isPresent()) {
@@ -99,15 +97,15 @@ public class InboxController {
                 emailItem.setAgoTimeString(p.format(date));
             });
 
-            model.addAttribute("emailList", emailList);
+            model.addAttribute(EMAIL_LIST_ATTRIBUTE, emailList);
         }
-        return "inbox-page";
+        return INBOX_MODEL;
     }
-
 
 
     @PostConstruct
     public void init() {
+
         List<Folder> folders = InitFolders.init("randomUserId");
         folderRepository.saveAll(folders);
     }

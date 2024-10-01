@@ -8,7 +8,7 @@ public class ModelConstant {
     public static final String DEFAULT_FOLDERS_ATTRIBUTE = "defaultFolders";
     public static final String STATS_ATTRIBUTE = "stats";
     public static final String FOLDER_NAME_ATTRIBUTE = "folderName";
-    public static final String EMAIL_ATTRIBUTE = "EMAIL";
+    public static final String EMAIL_ATTRIBUTE = "email";
     public static final String TO_ATTRIBUTE = "to";
 
 

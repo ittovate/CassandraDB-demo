@@ -15,7 +15,7 @@
                   align-items-center
                 " th:each="folder : ${folders}" th:href="@{'/folders?folder=' + ${folder.label}}">
                     <span th:text="${folder.label}"></span>
-                    <span class="badge bg-primary rounded-pill" th:text="${stats.get(folder.label)}"></span>
+                    <span class="badge bg-primary rounded-pill" th:if="${stats.get(folder.label)} != '0'" th:text="${stats.get(folder.label)}"></span>
                 </a>
 
             </ul>

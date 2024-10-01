@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: CassandraDB-demo
+  cassandra:
+    schema-action: recreate-drop-unused
+    request:
+      timeout: 10s
+    connection:
+      connect-timeout: 10s
+      init-query-timeout: 10s
+    # Uncomment and replace with actual values if needed
+    # contact-points: ${CASSANDRA_INSTANCE_1_IP_ADDRESS}, ${CASSANDRA_INSTANCE_2_IP_ADDRESS} # IP addresses for the nodes
+    # local-datacenter: ${DATACENTER}
+    # keyspace-name: ${KEYSPACE_NAME}
+    username: ${ASTRA_CLIENT_ID}
+    password: ${ASTRA_CLIENT_SECRET}
+    keyspace-name: ${ASTRA_KEYSPACE}
+    port: 9160
+    consistency-level: QUORUM
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+        provider:
+          google:
+            authorization-uri: ${GOOGLE_AUTHORIZATION_URL}
+            token-uri: ${GOOGLE_TOKEN_URL}
+            user-info-uri: ${GOOGLE_USER_INFO_URL}
+            user-name-attribute: ${GOOGLE_USER_NAME_ATTRIBUTES}
+
+astra:
+  client-id: ${ASTRA_CLIENT_ID}
+  client-secret: ${ASTRA_CLIENT_SECRET}
+  application-token: ${ASTRA_APPLICATION_TOKEN}
+  cloud-region: ${ASTRA_CLOUD_REGION}
+  database-id: ${ASTRA_DB_ID}
+  keyspace: ${ASTRA_KEYSPACE}
+
+datastax-java-driver:
+  basic:
+    secure-connect-bundle: /home/mustafa/PhpstormProjects/CassandraDB-demo/src/main/resources/secure-connect-inboxapp.zip
+
+logging:
+  level:
+    root: error
+    org:
+      springframework:
+        data:
+          cassandra:
+            core:
+              cql: DEBUG
